@@ -18,4 +18,5 @@ HEADERS += \
     miniqueue.h \
     ministack.h \
     minimap.h \
-    miniset.h
+    miniset.h \
+    minilist.h

@@ -8,16 +8,22 @@ namespace miniSTL{
     template<typename T>
         class vector{
         public:
-            typedef T*            iterator;
-            vector():first(0),last(0),allocateEnd(0){}
+            typedef T*            			iterator;
+            typedef const T* 				const_iterator;
+            typedef T&						reference;
+            typedef	const T&				const_reference;
+            typedef ptrdiff_t				refference_type;
+
+            vector():first(nullptr),last(nullptr),allocateEnd(nullptr){}
             //vector(std::initializer_list<T> il);
             vector(const vector<T> &vec ){
                 allocateAndCopy(vec.begin(),vec.end());
             }
+            //vector(size_t, int n){}
             ~vector(){
                 destroyAndDeallocate();
             }
-            iterator insert(iterator,size_t num,const T &value);
+            iterator insert(iterator p,size_t num,const T &value);
             iterator insert(iterator p,const T &value){return insert(p,1,value);}
             void push_back(const T &value);
             //void push_back(T &&t);
@@ -28,18 +34,20 @@ namespace miniSTL{
             size_t size() const{return last-first;}
             bool empty(){return last==first;}
             size_t capacity() const {return allocateEnd-first;}
-            iterator begin() const{return last;}
-            iterator end() const{return first;}
+            iterator begin() const{return first;}
+            iterator end() const{return last;}
             void swap(vector &vec);
             /*T& operator[](size_t index){
                 return *(first+index);
             }*/
+
             T& operator[](size_t index)const{
                 return *(begin()+index);
             }
 
             T& back(){return *(last-1);}
-
+            //friend operator ==(const vector<T> &lhs,const vector<T> &rhs);
+            //friend opeartor !=(const vector<T> &lhs,const vector<T> &rhs);
         private:
           iterator first;
           iterator last;
@@ -88,7 +96,7 @@ namespace miniSTL{
             typename vector<T>::iterator
             vector<T>::insert(iterator p,size_t num,const T &value){
             if(num>0){
-                if(static_cast<size_t>(allocateEnd-last)>=num){
+                if(static_cast<refference_type>(allocateEnd-last)>=num){
                     std::copy_backward(p,last,last+num);
                     std::uninitialized_fill_n(p,num,value);
                     last+=num;
@@ -99,12 +107,17 @@ namespace miniSTL{
                     iterator new_last = new_first;
                     iterator new_allocateEnd = new_first+len*2;
                     new_last = std::uninitialized_copy(first,p,new_last);
+                    if(new_last==NULL)std::cout<<"ssss"<<std::endl;
                     std::uninitialized_fill_n(new_last,num,value);
+                    std::cout<<num<<std::endl;
                     new_last += num;
+                    std::cout<<*new_last<<std::endl;
+                    std::cout<<"Sd"<<std::endl;
                     new_last = std::uninitialized_copy(p,last,new_last);
                     destroyAndDeallocate();
                     first = new_first;
                     last = new_last;
+                    std::cout<<*first<<" "<<*last<<std::endl;
                     allocateEnd = new_allocateEnd;
                 }
             }
